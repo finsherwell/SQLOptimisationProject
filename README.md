@@ -37,8 +37,6 @@ I will benchmark and test with the database using just standard SQL queries. No 
 
 Once there is a baseline benchmark, I will test each of the optimisations individually, seeing how they can improve the performance statistics alone. Then I will run a combined test to see how all of these optimisations combined (where possible) will speed up the performance. Charts can be found below in documentation.
 
-Certainly! Here's a more concise, well-formatted version of your technical notes, with SQL and configuration code properly embedded and organized for clarity:
-
 ## ⚠️ Prerequisites
 Forcing PostgreSQL to Simulate Disk I/O
 
