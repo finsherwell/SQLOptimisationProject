@@ -74,7 +74,7 @@ maintenance_work_mem = 64MB -> 16MB      # Reduce memory for maintenance operati
 ```
 Optional: Flush OS disk cache before running tests
 
-*Whilst these are aimed at trying to simulate real-world latency, my PC is setup to minimise this so these changes won't change much. However, benchmarks will be relative to the baseline, so improvements will be shown as a percentage.
+*Whilst these are aimed at trying to simulate real-world latency, my PC is setup to minimise this so these changes won't change much. However, benchmarks will be relative to the baseline, so improvements will be shown as a percentage.*
 
 Apply config changes:
 ```bash
