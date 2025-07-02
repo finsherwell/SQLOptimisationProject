@@ -37,12 +37,72 @@ I will benchmark and test with the database using just standard SQL queries. No 
 
 Once there is a baseline benchmark, I will test each of the optimisations individually, seeing how they can improve the performance statistics alone. Then I will run a combined test to see how all of these optimisations combined (where possible) will speed up the performance. Charts can be found below in documentation.
 
+Certainly! Here's a more concise, well-formatted version of your technical notes, with SQL and configuration code properly embedded and organized for clarity:
+
+## ⚠️ Prerequisites
+Forcing PostgreSQL to Simulate Disk I/O
+
+**Observation:**
+
+Running:
+```sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM employee WHERE salary > 100000 AND sex = 'm';
+```
+
+Outputted:
+```
+Buffers: shared hit=2467
+```
+
+**Interpretation**:
+All data was served from PostgreSQL’s shared buffer (RAM). No disk reads occurred.
+
+**Result**:
+Query executed very fast (~25 ms), which is unrealistic for large datasets on spinning disks.
+* **Average latency**: 25.368 ms
+* **Latency stddev**: ±3.292 ms
+
+**Goal:**
+Force PostgreSQL to perform more disk I/O to simulate real-world latency on disk-based systems.
+
+**Changes Made:**
+Update `postgresql.conf` to reduce memory use and discourage caching:
+```conf
+shared_buffers = 128MB -> 32MB           # Reduce PostgreSQL shared cache
+effective_cache_size = 4GB -> 256MB      # Lower OS cache estimation for planner
+work_mem = 4MB -> 1MB                    # Limit memory for sorts/hashes to force spills
+maintenance_work_mem = 64MB -> 16MB      # Reduce memory for maintenance operations
+```
+Optional: Flush OS disk cache before running tests
+
+*Whilst these are aimed at trying to simulate real-world latency, my PC is setup to minimise this so these changes won't change much. However, benchmarks will be relative to the baseline, so improvements will be shown as a percentage.
+
+Apply config changes:
+```bash
+sudo systemctl restart postgresql
+```
+
+Re-run the Query:
+```sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM employee WHERE salary > 100000 AND sex = 'm';
+```
+
+Check for:
+```
+Buffers: shared hit=XX, read=YY
+```
+
+* **Goal**: `read=YY` > 0
+  → Confirms actual disk reads (slower, more realistic latency)
+
 ## 💻 Technology:
 - **PostgreSQL** - RDBMS
 - **DBeaver** - SQL IDE
 - **Docker** - Local sandbox environment
 - **Python** - For data generation
-  * Libraries like ```Faker```, ```psycopg2```, and ```SQLAlchemy``` may be used
+  * ```Faker``` has been used to help generate realistic data entries
 
 ## 📂 Documentation:
 - Entity Relationship Diagrams (ERD)
